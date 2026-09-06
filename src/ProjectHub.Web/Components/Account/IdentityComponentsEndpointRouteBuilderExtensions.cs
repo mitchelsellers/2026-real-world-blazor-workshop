@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using ProjectHub.Web.Components.Account.Pages;
 using ProjectHub.Web.Components.Account.Pages.Manage;
-using ProjectHub.Web.Data;
+using ProjectHub.Data.Models;
 
 namespace Microsoft.AspNetCore.Routing;
 

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using ProjectHub.Web.Data;
+using ProjectHub.Data.Models;
 
 namespace ProjectHub.Web.Components.Account;
 

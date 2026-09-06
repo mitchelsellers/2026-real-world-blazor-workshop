@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
-using ProjectHub.Web.Data;
+using ProjectHub.Data.Models;
 
 namespace ProjectHub.Web.Components.Account;
 

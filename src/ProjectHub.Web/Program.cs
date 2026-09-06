@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ProjectHub.Web.Components;
 using ProjectHub.Web.Components.Account;
-using ProjectHub.Web.Data;
+using ProjectHub.Data;
+using ProjectHub.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

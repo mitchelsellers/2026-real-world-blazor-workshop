@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ProjectHub.Data\ProjectHub.Data.csproj" />
     <ProjectReference Include="..\ProjectHub.ServiceDefaults\ProjectHub.ServiceDefaults.csproj" />
   </ItemGroup>
 
