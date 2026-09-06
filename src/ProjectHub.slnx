@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ProjectHub.Web/ProjectHub.Web.csproj" />
+  <Project Path="ProjectHub.AppHost/ProjectHub.AppHost.csproj" />
+  <Project Path="ProjectHub.ServiceDefaults/ProjectHub.ServiceDefaults.csproj" />
+</Solution>
