@@ -26,7 +26,7 @@ builder.Services.AddAuthentication(options =>
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -42,6 +42,22 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    // Discussion point - Should we EVER do this in production?  Pros/Cons?
+    await using var scope =
+        app.Services.CreateAsyncScope();
+
+    var factory = scope.ServiceProvider
+            .GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+
+    await using var db = await factory.CreateDbContextAsync();
+
+    await db.Database.MigrateAsync();
+
+    await DemoDataSeeder.SeedAsync(db);
+}
 
 app.MapDefaultEndpoints();
 
