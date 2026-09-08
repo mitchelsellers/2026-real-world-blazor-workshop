@@ -53,4 +53,27 @@ internal sealed class ProjectService(IDbContextFactory<ApplicationDbContext> con
                     .ToList()))
             .SingleOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<ProjectActivityView?> GetProjectActivityAsync(Guid projectId, CancellationToken cancellationToken = default)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.Projects
+            .AsNoTracking()
+            .Where(x => x.ProjectId == projectId)
+            .Select(x => new ProjectActivityView(
+                x.ProjectId,
+                x.Name,
+                x.Members.Count,
+                x.WorkItems.Count,
+                x.WorkItems
+                    .OrderByDescending(w => w.CreatedOnUtc)
+                    .Select(w => new ProjectActivityWorkItem(
+                        w.WorkItemId,
+                        w.Title,
+                        w.Status,
+                        w.Comments.Count))
+                    .ToList()))
+            .SingleOrDefaultAsync(cancellationToken);
+    }
 }

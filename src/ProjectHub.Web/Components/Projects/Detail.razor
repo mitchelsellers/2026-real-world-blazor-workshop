@@ -10,65 +10,71 @@
 
 @if (_project == null)
 {
-    <p>Project not found.</p>
+	<p>Project not found.</p>
 }
 else
 {
-    <h1>@_project.Name</h1>
+	<h1>@_project.Name</h1>
 
-    <p>@_project.Description</p>
+	<p>@_project.Description</p>
 
-    <div class="mb-3">
-        <span class="badge bg-secondary">
-            @_project.Status
-        </span>
-    </div>
+	<div class="mb-3">
+		<span class="badge bg-secondary">
+			@_project.Status
+		</span>
+	</div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Work Items</h2>
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2 class="mb-0">Work Items</h2>
 
-        <a href="@($"/projects/{ProjectId}/work-items/new")"
-           class="btn btn-primary">
-            Add Work Item
-        </a>
-    </div>
+		<a href="@($"/projects/{ProjectId}/work-items/new")"
+		   class="btn btn-primary">
+			Add Work Item
+		</a>
+	</div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>Due</th>
-                <th>Comments</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in _project.WorkItems)
-            {
-                <tr>
-                    <td>@item.Title</td>
-                    <td>@item.Status</td>
-                    <td>@item.Priority</td>
-                    <td>
-                        @item.DueDateUtc?.ToString("d")
-                    </td>
-                    <td>@item.CommentCount</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Status</th>
+				<th>Priority</th>
+				<th>Due</th>
+				<th>Comments</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in _project.WorkItems)
+			{
+				<tr>
+					<td>@item.Title</td>
+					<td>@item.Status</td>
+					<td>@item.Priority</td>
+					<td>
+						@item.DueDateUtc?.ToString("d")
+					</td>
+					<td>@item.CommentCount</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<p>
+		<a href="@($"/projects/{ProjectId}/activity")"
+		   class="btn btn-outline-secondary">
+			View Activity
+		</a>
+	</p>
 }
 
 @code
 {
-    [Parameter]
-    public Guid ProjectId { get; set; }
+	[Parameter]
+	public Guid ProjectId { get; set; }
 
-    private ProjectDetail? _project;
+	private ProjectDetail? _project;
 
-    protected override async Task OnParametersSetAsync()
-    {
-        _project = await ProjectService.GetProjectAsync(ProjectId);
-    }
+	protected override async Task OnParametersSetAsync()
+	{
+		_project = await ProjectService.GetProjectAsync(ProjectId);
+	}
 }
