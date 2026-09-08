@@ -5,4 +5,7 @@ public sealed record DashboardSummary(
     int OpenWorkItems,
     int AssignedToMe,
     int OverdueWorkItems,
-    int CompletedThisWeek);
+    int CompletedThisWeek)
+{
+    public static DashboardSummary Empty { get; } = new DashboardSummary(0, 0, 0, 0, 0);
+}

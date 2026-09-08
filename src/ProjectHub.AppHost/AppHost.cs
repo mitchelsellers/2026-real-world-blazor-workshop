@@ -4,6 +4,9 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var useRemoteDb = builder.Configuration.GetValue<bool>("UseRemoteDatabase");
 
+var redis = builder.AddRedis("redis")
+    .WithRedisCommander()
+    .WithRedisInsight();
 
 //Do we want to do additional overides, or do se use a locally configured DB
 if (!useRemoteDb)
@@ -24,13 +27,17 @@ if (!useRemoteDb)
     builder.AddProject<Projects.ProjectHub_Web>("projecthub-web")
         .WithReference(sql)
         .WithReference(migrations)
+        .WithReference(redis)
         .WaitFor(sql)
         .WaitFor(migrations)
+        .WaitFor(redis)
         .WithExternalHttpEndpoints();
 }
 else
 {
     builder.AddProject<Projects.ProjectHub_Web>("web")
+        .WithReference(redis)
+        .WaitFor(redis)
         .WithExternalHttpEndpoints();
 }
 

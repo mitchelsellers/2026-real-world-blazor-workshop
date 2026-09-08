@@ -62,6 +62,15 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.AddStackExchangeRedisCache(
+    options =>
+    {
+        options.Configuration =
+            builder.Configuration
+                .GetConnectionString("redis");
+        options.InstanceName = "ProjectHub_";
+    });
+
 builder.Services.AddHybridCache(options =>
 {
     options.DefaultEntryOptions =
@@ -71,6 +80,8 @@ builder.Services.AddHybridCache(options =>
             LocalCacheExpiration = TimeSpan.FromMinutes(2)
         };
 });
+
+
 
 builder.Services.AddProjectHubApplication();
 
