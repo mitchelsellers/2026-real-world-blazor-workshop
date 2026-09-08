@@ -24,58 +24,48 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
 
         var startOfWeek = now.Date.AddDays(-(int)now.DayOfWeek);
 
-        // NOTE: This is ugly on purpose!
-        var projectCount =
-            await db.ProjectMembers
-                .AsNoTracking()
-                .Where(x => x.UserId == userId.Value)
-                .Select(x => x.ProjectId)
-                .Distinct()
-                .CountAsync(cancellationToken);
+        var stats =  await db.WorkItems
+            .AsNoTracking()
+            .Where(x =>
+                x.Project.Members.Any(
+                    m => m.UserId == userId.Value))
+            .GroupBy(_ => 1)
+            .Select(x => new
+            {
+                Open =
+                    x.Count(w =>
+                        w.Status != WorkItemStatus.Completed),
 
-        var openWorkItems =
-            await db.WorkItems
-                .AsNoTracking()
-                .Where(x =>
-                    x.Project.Members.Any(
-                        m => m.UserId == userId.Value) &&
-                    x.Status != WorkItemStatus.Completed)
-                .CountAsync(cancellationToken);
+                Assigned =
+                    x.Count(w =>
+                        w.AssignedToUserId == userId.Value &&
+                        w.Status != WorkItemStatus.Completed),
 
-        var assignedToMe =
-            await db.WorkItems
-                .AsNoTracking()
-                .Where(x =>
-                    x.AssignedToUserId == userId.Value &&
-                    x.Status != WorkItemStatus.Completed)
-                .CountAsync(cancellationToken);
+                Overdue =
+                    x.Count(w =>
+                        w.Status != WorkItemStatus.Completed &&
+                        w.DueDateUtc != null &&
+                        w.DueDateUtc < now),
 
-        var overdue =
-            await db.WorkItems
-                .AsNoTracking()
-                .Where(x =>
-                    x.Project.Members.Any(
-                        m => m.UserId == userId.Value) &&
-                    x.Status != WorkItemStatus.Completed &&
-                    x.DueDateUtc != null &&
-                    x.DueDateUtc < now)
-                .CountAsync(cancellationToken);
+                CompletedThisWeek =
+                    x.Count(w =>
+                        w.Status == WorkItemStatus.Completed &&
+                        w.UpdatedOnUtc >= startOfWeek)
+            })
+            .SingleOrDefaultAsync(cancellationToken);
 
-        var completedThisWeek =
-            await db.WorkItems
-                .AsNoTracking()
-                .Where(x =>
-                    x.Project.Members.Any(
-                        m => m.UserId == userId.Value) &&
-                    x.Status == WorkItemStatus.Completed &&
-                    x.UpdatedOnUtc >= startOfWeek)
-                .CountAsync(cancellationToken);
+        var projectCount = await db.ProjectMembers
+            .AsNoTracking()
+            .Where(x => x.UserId == userId.Value)
+            .Select(x => x.ProjectId)
+            .Distinct()
+            .CountAsync(cancellationToken);
 
         return new DashboardSummary(
-            projectCount,
-            openWorkItems,
-            assignedToMe,
-            overdue,
-            completedThisWeek);
+                    projectCount,
+                    stats?.Open ?? 0,
+                    stats?.Assigned ?? 0,
+                    stats?.Overdue ?? 0,
+                    stats?.CompletedThisWeek ?? 0);
     }
 }
