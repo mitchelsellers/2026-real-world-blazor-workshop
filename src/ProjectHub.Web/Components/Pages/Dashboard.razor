@@ -1,0 +1,73 @@
+﻿@page "/dashboard"
+
+@rendermode InteractiveServer
+
+@attribute [Authorize]
+
+@using ProjectHub.Application.Dashboard
+
+@inject IDashboardService DashboardService
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h1>My Dashboard</h1>
+
+        <p class="text-muted">
+            A quick view of your projects and work.
+        </p>
+    </div>
+
+    @if (_summary == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="row g-3">
+
+            <div class="col-md-4 col-xl">
+                <DashboardCard
+                    Title="My Projects"
+                    Value="@_summary.ProjectCount" />
+            </div>
+
+            <div class="col-md-4 col-xl">
+                <DashboardCard
+                    Title="Open Work Items"
+                    Value="@_summary.OpenWorkItems" />
+            </div>
+
+            <div class="col-md-4 col-xl">
+                <DashboardCard
+                    Title="Assigned to Me"
+                    Value="@_summary.AssignedToMe" />
+            </div>
+
+            <div class="col-md-4 col-xl">
+                <DashboardCard
+                    Title="Overdue"
+                    Value="@_summary.OverdueWorkItems" />
+            </div>
+
+            <div class="col-md-4 col-xl">
+                <DashboardCard
+                    Title="Completed This Week"
+                    Value="@_summary.CompletedThisWeek" />
+            </div>
+
+        </div>
+    }
+
+</div>
+
+@code {
+    private DashboardSummary? _summary;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _summary = await DashboardService.GetSummaryAsync();
+    }
+}

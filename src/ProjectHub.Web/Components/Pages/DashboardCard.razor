@@ -1,0 +1,19 @@
+﻿<div class="card h-100 shadow-sm">
+    <div class="card-body">
+        <div class="text-muted small mb-2">
+            @Title
+        </div>
+
+        <div class="display-6 fw-semibold">
+            @Value
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public required string Title { get; set; }
+
+    [Parameter]
+    public int Value { get; set; }
+}
