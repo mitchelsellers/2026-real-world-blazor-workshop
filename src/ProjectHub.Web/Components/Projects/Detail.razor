@@ -2,9 +2,12 @@
 
 @rendermode InteractiveServer
 
+@using ProjectHub.Application.Authorization
 @using ProjectHub.Application.Projects
 
 @inject IProjectService ProjectService
+@inject IAuthorizationService AuthorizationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
@@ -12,7 +15,16 @@
 
 @if (_project == null)
 {
-	<p>Project not found.</p>
+	if (_accessDenied)
+	{
+		<p class="text-danger">
+			Access Denied. You do not have permission to view this project.
+		</p>
+	}
+	else
+	{
+		<p>Loading...</p>
+	}
 }
 else
 {
@@ -74,9 +86,23 @@ else
 	public Guid ProjectId { get; set; }
 
 	private ProjectDetail? _project;
+	private bool _accessDenied;
 
 	protected override async Task OnParametersSetAsync()
 	{
+		var authState = await AuthenticationStateProvider
+					.GetAuthenticationStateAsync();
+
+		var resource = new ProjectAuthorizationResource(ProjectId);
+
+		var authorization = await AuthorizationService.AuthorizeAsync(authState.User, resource, "ProjectMember");
+
+		if (!authorization.Succeeded)
+		{
+			_accessDenied = true;
+			return;
+		}
+
 		_project = await ProjectService.GetProjectAsync(ProjectId);
 	}
 }

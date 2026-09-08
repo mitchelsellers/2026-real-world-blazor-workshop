@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ProjectHub.Web.Components;
-using ProjectHub.Web.Components.Account;
+using Microsoft.Extensions.Caching.Hybrid;
+using ProjectHub.Application.Authorization;
 using ProjectHub.Data;
 using ProjectHub.Data.Models;
+using ProjectHub.Web.Components;
+using ProjectHub.Web.Components.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,26 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(
+            "ProjectMember",
+            policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddRequirements(new ProjectMemberRequirement());
+            });
+
+        options.AddPolicy(
+            "ProjectManager",
+            policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddRequirements(new ProjectManagerRequirement());
+            });
+    });
+
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -38,6 +61,16 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+builder.Services.AddHybridCache(options =>
+{
+    options.DefaultEntryOptions =
+        new HybridCacheEntryOptions
+        {
+            Expiration = TimeSpan.FromMinutes(2),
+            LocalCacheExpiration = TimeSpan.FromMinutes(2)
+        };
+});
 
 builder.Services.AddProjectHubApplication();
 
