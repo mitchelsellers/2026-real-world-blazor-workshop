@@ -1,0 +1,67 @@
+﻿@page "/projects/{ProjectId:guid}"
+
+@rendermode InteractiveServer
+
+@using ProjectHub.Application.Projects
+
+@inject IProjectService ProjectService
+
+<PageTitle>Project</PageTitle>
+
+@if (_project == null)
+{
+    <p>Project not found.</p>
+}
+else
+{
+    <h1>@_project.Name</h1>
+
+    <p>@_project.Description</p>
+
+    <div class="mb-3">
+        <span class="badge bg-secondary">
+            @_project.Status
+        </span>
+    </div>
+
+    <h2>Work Items</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Due</th>
+                <th>Comments</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _project.WorkItems)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Status</td>
+                    <td>@item.Priority</td>
+                    <td>
+                        @item.DueDateUtc?.ToString("d")
+                    </td>
+                    <td>@item.CommentCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    [Parameter]
+    public Guid ProjectId { get; set; }
+
+    private ProjectDetail? _project;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _project = await ProjectService.GetProjectAsync(ProjectId);
+    }
+}

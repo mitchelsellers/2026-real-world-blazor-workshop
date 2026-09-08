@@ -25,4 +25,32 @@ internal sealed class ProjectService(IDbContextFactory<ApplicationDbContext> con
                         WorkItemStatus.Completed)))
             .ToListAsync(cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<ProjectDetail?> GetProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
+    {
+        await using var db = await contextFactory.CreateDbContextAsync(cancellationToken);
+
+        return await db.Projects
+            .AsNoTracking()
+            .Where(x => x.ProjectId == projectId)
+            .Select(x => new ProjectDetail(
+                x.ProjectId,
+                x.Name,
+                x.Description,
+                x.Status,
+                x.WorkItems
+                    .OrderByDescending(w => w.Priority)
+                    .ThenBy(w => w.DueDateUtc)
+                    .Select(w => new ProjectWorkItem(
+                        w.WorkItemId,
+                        w.Title,
+                        w.Status,
+                        w.Priority,
+                        w.AssignedToUserId,
+                        w.DueDateUtc,
+                        w.Comments.Count))
+                    .ToList()))
+            .SingleOrDefaultAsync(cancellationToken);
+    }
 }

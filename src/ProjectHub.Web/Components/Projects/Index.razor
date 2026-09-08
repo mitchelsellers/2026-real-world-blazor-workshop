@@ -1,7 +1,6 @@
 ﻿@page "/projects"
 @rendermode InteractiveServer
 
-@using ProjectHub.Data.Models
 @using ProjectHub.Application.Projects
 
 @inject IProjectService ProjectService
@@ -29,7 +28,11 @@ else
             @foreach (var project in _projects)
             {
                 <tr>
-                    <td>@project.Name</td>
+                    <td>
+                        <a href="@($"/projects/{project.ProjectId}")">
+                            @project.Name
+                        </a>
+                    </td>
                     <td>@project.Status</td>
                     <td>
                         @project.OpenWorkItemCount
