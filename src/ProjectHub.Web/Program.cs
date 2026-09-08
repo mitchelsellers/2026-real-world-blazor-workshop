@@ -8,10 +8,22 @@ using ProjectHub.Data;
 using ProjectHub.Data.Models;
 using ProjectHub.Web.Components;
 using ProjectHub.Web.Components.Account;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Host.UseSerilog(
+    (context, services, configuration) =>
+    {
+        configuration
+            .ReadFrom.Configuration(
+                context.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext()
+            .WriteTo.Console();
+    });
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

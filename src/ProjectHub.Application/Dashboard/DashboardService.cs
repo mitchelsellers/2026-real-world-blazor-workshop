@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Logging;
 using ProjectHub.Application.Caching;
 using ProjectHub.Application.Identity;
 using ProjectHub.Data;
@@ -8,7 +9,7 @@ using ProjectHub.Data.Models;
 namespace ProjectHub.Application.Dashboard;
 
 [RegisterScoped]
-internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> contextFactory, ICurrentUser currentUser, HybridCache cache)
+internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> contextFactory, ICurrentUser currentUser, HybridCache cache, ILogger<DashboardService> logger)
     : IDashboardService
 {
     public async Task<DashboardSummary> GetSummaryAsync(CancellationToken cancellationToken = default)
@@ -24,6 +25,8 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
             ProjectHubCacheKeys.DashboardUserTag(userId.Value),
             async cancel =>
             {
+                logger.LogInformation("Dashboard cache miss for user {UserId}. Rebuilding summary.", userId);
+
                 return await BuildSummaryAsync(
                     userId.Value,
                     cancel);

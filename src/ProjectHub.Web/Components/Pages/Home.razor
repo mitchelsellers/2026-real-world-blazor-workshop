@@ -3,6 +3,7 @@
 @using ProjectHub.Application.Identity
 
 @inject ICurrentUser CurrentUser
+@inject ILogger<Home> Logger
 
 <PageTitle>Home</PageTitle>
 
@@ -27,5 +28,10 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		_currentUserId = await CurrentUser.GetUserIdAsync();
+		// Non-Template
+        Logger.LogInformation($"Current User ID: {_currentUserId}");
+
+		// Template
+        Logger.LogInformation("Current User ID: {UserId}", _currentUserId);
 	}
 }
