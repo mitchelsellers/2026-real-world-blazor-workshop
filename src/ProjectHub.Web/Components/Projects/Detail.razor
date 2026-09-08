@@ -6,6 +6,8 @@
 
 @inject IProjectService ProjectService
 
+@attribute [Authorize]
+
 <PageTitle>Project</PageTitle>
 
 @if (_project == null)

@@ -1,7 +1,31 @@
 ﻿@page "/"
 
+@using ProjectHub.Application.Identity
+
+@inject ICurrentUser CurrentUser
+
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<h2>Current User Status</h2>
+
+@if (_currentUserId.HasValue)
+{
+	<p>Current User ID: @_currentUserId</p>
+}
+else
+{
+	<p>No user is currently logged in.</p>
+}
+
+@code{
+	private Guid? _currentUserId;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_currentUserId = await CurrentUser.GetUserIdAsync();
+	}
+}

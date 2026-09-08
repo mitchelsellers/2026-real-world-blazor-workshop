@@ -13,7 +13,7 @@ if (!useRemoteDb)
     var sql = builder.AddSqlServer("sql")
         .WithImageTag("2025-latest")
         .WithLifetime(ContainerLifetime.Persistent)
-        .AddDatabase("DefaultConnection", "ProjectHubDb");
+        .AddDatabase("DefaultConnection", "ProjectHubDb2026");
 
     // Run the migrations, with a reference to SQL so the connection information is injected, and wait for SQL to be ready
     var migrations = builder.AddProject<Projects.ProjectHub_AppHostSetupWorker>("Migrations")
