@@ -5,6 +5,7 @@ using ProjectHub.Application.Caching;
 using ProjectHub.Application.Identity;
 using ProjectHub.Data;
 using ProjectHub.Data.Models;
+using System.Diagnostics;
 
 namespace ProjectHub.Application.Dashboard;
 
@@ -12,6 +13,8 @@ namespace ProjectHub.Application.Dashboard;
 internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> contextFactory, ICurrentUser currentUser, HybridCache cache, ILogger<DashboardService> logger)
     : IDashboardService
 {
+    private static readonly ActivitySource ActivitySource = new("ProjectHub");
+
     public async Task<DashboardSummary> GetSummaryAsync(CancellationToken cancellationToken = default)
     {
         var userId = await currentUser.GetUserIdAsync();
@@ -50,6 +53,10 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
         Guid userId,
         CancellationToken cancellationToken)
     {
+        using var activity = ActivitySource.StartActivity("BuildDashboardSummary");
+
+        activity?.SetTag("projecthub.user.id", userId);
+
         await using var db =
             await contextFactory.CreateDbContextAsync(
                 cancellationToken);
