@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProjectHub.Application.Dashboard;
 using ProjectHub.Data;
 using ProjectHub.Data.Models;
 
 namespace ProjectHub.Application.WorkItems;
 
 [RegisterScoped]
-internal sealed class WorkItemService(IDbContextFactory<ApplicationDbContext> contextFactory)
+internal sealed class WorkItemService(IDbContextFactory<ApplicationDbContext> contextFactory, IDashboardCacheInvalidator dashboardCacheInvalidator)
     : IWorkItemService
 {
     public async Task<Guid> CreateAsync(CreateWorkItemRequest request, CancellationToken cancellationToken = default)
@@ -33,6 +34,9 @@ internal sealed class WorkItemService(IDbContextFactory<ApplicationDbContext> co
         db.WorkItems.Add(item);
 
         await db.SaveChangesAsync(cancellationToken);
+
+        //For now, clear everyone, but lets talk about optimizations
+        await dashboardCacheInvalidator.InvalidateAllDashboard(cancellationToken);
 
         return item.WorkItemId;
     }
