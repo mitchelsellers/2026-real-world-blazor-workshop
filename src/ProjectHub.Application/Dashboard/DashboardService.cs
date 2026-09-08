@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using ProjectHub.Application.Caching;
 using ProjectHub.Application.Identity;
 using ProjectHub.Data;
 using ProjectHub.Data.Models;
@@ -20,7 +21,7 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
         }
 
         return await cache.GetOrCreateAsync(
-            GetCacheKey(userId.Value),
+            ProjectHubCacheKeys.DashboardUserTag(userId.Value),
             async cancel =>
             {
                 return await BuildSummaryAsync(
@@ -35,8 +36,8 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
             },
             tags:
             [
-                "dashboard",
-                GetUserTag(userId.Value)
+                ProjectHubCacheKeys.DashboardTag,
+                ProjectHubCacheKeys.DashboardUserTag(userId.Value)
             ],
             cancellationToken:
                 cancellationToken);
@@ -111,10 +112,4 @@ internal sealed class DashboardService(IDbContextFactory<ApplicationDbContext> c
             stats?.Overdue ?? 0,
             stats?.CompletedThisWeek ?? 0);
     }
-
-    private static string GetCacheKey(Guid userId)
-        => $"dashboard:{userId:N}";
-
-    private static string GetUserTag(Guid userId)
-        => $"dashboard-user:{userId:N}";
 }

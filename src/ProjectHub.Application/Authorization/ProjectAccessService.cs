@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using ProjectHub.Application.Caching;
 using ProjectHub.Data;
 using ProjectHub.Data.Models;
 
@@ -32,13 +33,13 @@ internal sealed class ProjectAccessService(IDbContextFactory<ApplicationDbContex
 
     public ValueTask InvalidateUserAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        return cache.RemoveAsync(GetCacheKey(userId), cancellationToken);
+        return cache.RemoveAsync(ProjectHubCacheKeys.ProjectAccess(userId), cancellationToken);
     }
 
     private async Task<ProjectAccessEntry[]> GetUserAccessAsync(Guid userId, CancellationToken cancellationToken)
     {
         return await cache.GetOrCreateAsync(
-            GetCacheKey(userId),
+            ProjectHubCacheKeys.ProjectAccess(userId),
             async cancel =>
             {
                 await using var db =
@@ -56,7 +57,4 @@ internal sealed class ProjectAccessService(IDbContextFactory<ApplicationDbContex
             },
             cancellationToken: cancellationToken);
     }
-
-    private static string GetCacheKey(Guid userId)
-        => $"project-access:{userId:N}";
 }

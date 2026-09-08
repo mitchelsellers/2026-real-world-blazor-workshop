@@ -95,7 +95,7 @@ else
 
 		var resource = new ProjectAuthorizationResource(ProjectId);
 
-		var authorization = await AuthorizationService.AuthorizeAsync(authState.User, resource, "ProjectMember");
+		var authorization = await AuthorizationService.AuthorizeAsync(authState.User, resource, ProjectHubPolicyNames.ProjectMember);
 
 		if (!authorization.Succeeded)
 		{

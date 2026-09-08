@@ -31,7 +31,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy(
-            "ProjectMember",
+            ProjectHubPolicyNames.ProjectMember,
             policy =>
             {
                 policy.RequireAuthenticatedUser();
@@ -39,7 +39,7 @@ builder.Services.AddAuthorization(options =>
             });
 
         options.AddPolicy(
-            "ProjectManager",
+            ProjectHubPolicyNames.ProjectManager,
             policy =>
             {
                 policy.RequireAuthenticatedUser();
