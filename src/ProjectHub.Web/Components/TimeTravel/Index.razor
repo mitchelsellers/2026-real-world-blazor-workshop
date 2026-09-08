@@ -1,0 +1,23 @@
+﻿@page "/time-travel"
+
+@using ProjectHub.Application.TimeTravel
+
+@inject ITimeTravel TimeTravel1
+
+@inherits OwningComponentBase //Allow for the creatin of Custom Scoped Services in the Component
+
+<h1><code>OwningComponentBase</code> Example &amp; Circuit Lifetime Demos</h1>
+
+<ul>
+    <li>TimeTravel1.DT: @TimeTravel1?.DT</li>
+    <li>TimeTravel2.DT: @TimeTravel2?.DT</li>
+</ul>
+
+@code {
+    private ITimeTravel TimeTravel2 { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        TimeTravel2 = ScopedServices.GetRequiredService<ITimeTravel>();
+    }
+}
