@@ -1,11 +1,10 @@
 ﻿@page "/projects"
 @rendermode InteractiveServer
 
-@using Microsoft.EntityFrameworkCore
-@using ProjectHub.Data
 @using ProjectHub.Data.Models
+@using ProjectHub.Application.Projects
 
-@inject IDbContextFactory<ApplicationDbContext> ContextFactory
+@inject IProjectService ProjectService
 
 <!-- Discussion Point: What this Does -->
 <PageTitle>Projects</PageTitle>
@@ -33,9 +32,7 @@ else
                     <td>@project.Name</td>
                     <td>@project.Status</td>
                     <td>
-                        @project.WorkItems.Count(
-                            x => x.Status !=
-                                WorkItemStatus.Completed)
+                        @project.OpenWorkItemCount
                     </td>
                 </tr>
             }
@@ -45,15 +42,10 @@ else
 
 @code
 {
-    private List<Project>? _projects;
+    private IReadOnlyList<ProjectListItem>? _projects;
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = await ContextFactory.CreateDbContextAsync();
-
-        _projects = await db.Projects
-            .Include(x => x.WorkItems)
-            .OrderBy(x => x.Name)
-            .ToListAsync();
+		_projects = await ProjectService.GetProjectsAsync();
     }
 }

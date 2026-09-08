@@ -1,6 +1,7 @@
 <Solution>
   <Project Path="AppHostSetupWorker/ProjectHub.AppHostSetupWorker.csproj" />
   <Project Path="ProjectHub.AppHost/ProjectHub.AppHost.csproj" />
+  <Project Path="ProjectHub.Application/ProjectHub.Application.csproj" Id="3717a6cb-b03f-436b-908f-1e8583ae6be8" />
   <Project Path="ProjectHub.Data/ProjectHub.Data.csproj" Id="e15eaf6e-a9d2-46e1-ac31-a878e340c554" />
   <Project Path="ProjectHub.ServiceDefaults/ProjectHub.ServiceDefaults.csproj" />
   <Project Path="ProjectHub.Web/ProjectHub.Web.csproj" />
