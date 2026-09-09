@@ -1,5 +1,5 @@
 {
   "appHost": {
-    "path": "src.AppHost/src.AppHost.csproj"
+    "path": "ProjectHub.AppHost/ProjectHub.AppHost.csproj"
   }
 }
